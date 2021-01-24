@@ -10,15 +10,15 @@ resultList.setAttribute('class', 'typeahead__resultsList list-unstyled m-0');
 searchResult.appendChild(resultList);
 
 const search = async (query) => {
-  // A little verbose way
-  // const request = await fetch('https://jsonplaceholder.typicode.com/users')
-  //   .then((res) => res.json())
-  //   .then((data) => console.log(data))
-
   let matches = [];
   const regexBlankSpace = new RegExp('^ ');
   
   if (!regexBlankSpace.test(query)) {
+    // A little verbose way
+    // const request = await fetch('https://jsonplaceholder.typicode.com/users')
+    //   .then((res) => res.json())
+    //   .then((data) => console.log(data))
+
     const request = await fetch('https://jsonplaceholder.typicode.com/users');
     const response = await request.json();
     
@@ -57,9 +57,26 @@ const search = async (query) => {
   }
 }
 
+let delayedSearch = (fn, delay) => {
+  let timer;
+  return function() {
+    let context = this,
+      args = arguments;
+      
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
+      console.log(args);
+      fn.apply(context, args);
+    }, delay);
+  }
+}
+
 searchInput.addEventListener('input', () => {
   formData = new FormData(searchForm);
-  search(formData.get('search'))
+  delayedSearch(search, 300)(formData.get('search'));
 })
 
 // searchForm.addEventListener('submit', (evt) => {
