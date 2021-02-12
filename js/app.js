@@ -10,6 +10,8 @@ resultList.setAttribute('class', 'typeahead__resultsList list-unstyled m-0');
 searchResult.appendChild(resultList);
 
 const search = async (query) => {
+  console.log('Entered', query);
+
   let matches = [];
   const regexBlankSpace = new RegExp('^ ');
 
@@ -56,26 +58,28 @@ const search = async (query) => {
   }
 }
 
+// Debouncing -> Start
 let delayedSearch = (fn, delay) => {
   let timer;
-  return function () {
-    let context = this,
-      args = arguments;
 
-    if (timer) {
-      clearTimeout(timer);
-    }
-
+  return function() {
+    let context = this;
+    let query = arguments;
+    
+    clearTimeout(timer);
     timer = setTimeout(() => {
-      // console.log(args);
-      fn.apply(context, args);
+      console.log(query);
+      fn.apply(context, query);
     }, delay);
   }
 }
 
+let debounce = delayedSearch(search, 300); // Storing the returned fn
+// END
+
 searchInput.addEventListener('input', () => {
   formData = new FormData(searchForm);
-  delayedSearch(search, 300)(formData.get('search'));
+  debounce(formData.get('search'));
 })
 
 // searchForm.addEventListener('submit', (evt) => {
